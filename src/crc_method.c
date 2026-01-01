@@ -94,3 +94,13 @@ int crc32_mpeg_2(const uint8_t *data, uint32_t len, uint32_t *result)
 {
     return crc(data, len, result, 32, 0x04C11DB7U, 0xFFFFFFFFU, 0U, (bool)false, (bool)false);
 }
+
+int crc64_iso(const uint8_t *data, uint32_t len, uint64_t *result)
+{
+    return crc_expand64(data, len, result, 64, 0x000000000000001BULL, 0xFFFFFFFFFFFFFFFFULL, 0xFFFFFFFFFFFFFFFFULL, (bool)true, (bool)true);
+}
+
+int crc64_ecma(const uint8_t *data, uint32_t len, uint64_t *result)
+{
+    return crc_expand64(data, len, result, 64, 0x42F0E1EBA9EA3693ULL, 0xFFFFFFFFFFFFFFFFULL, 0xFFFFFFFFFFFFFFFFULL, (bool)true, (bool)true);
+}

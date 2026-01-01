@@ -32,7 +32,7 @@ extern "C" {
  * @param data Data to be verified, 0 is the left, len - 1 is the right.
  * @param len The length of the data to be verified (in byte).
  * @param result CRC verification result.
- * @param order The order of polynomials.
+ * @param order The order of polynomials, 1-32.
  * @param poly The polynomial.
  * @param init The initial value.
  * @param xorout The XOR value of the result.
@@ -43,6 +43,24 @@ extern "C" {
 int crc(const uint8_t *data, uint32_t len, uint32_t *result,
         uint8_t order, uint32_t poly, uint32_t init, uint32_t xorout,
         bool refin, bool refout);
+
+/**
+ * @brief Calculate the CRC check result of the data.
+ *
+ * @param data Data to be verified, 0 is the left, len - 1 is the right.
+ * @param len The length of the data to be verified (in byte).
+ * @param result CRC verification result.
+ * @param order The order of polynomials, 1-64.
+ * @param poly The polynomial.
+ * @param init The initial value.
+ * @param xorout The XOR value of the result.
+ * @param refin Input reflect.
+ * @param refout Output reflect.
+ * @return
+ */
+int crc_expand64(const uint8_t *data, uint32_t len, uint64_t *result,
+                uint8_t order, uint64_t poly, uint64_t init, uint64_t xorout,
+                bool refin, bool refout);
 
 int crc8(const uint8_t *data, uint32_t len, uint32_t *result);
 int crc8_itu(const uint8_t *data, uint32_t len, uint32_t *result);
@@ -63,6 +81,8 @@ int crc32(const uint8_t *data, uint32_t len, uint32_t *result);
 int crc32_c(const uint8_t *data, uint32_t len, uint32_t *result);
 int crc32_koopman(const uint8_t *data, uint32_t len, uint32_t *result);
 int crc32_mpeg_2(const uint8_t *data, uint32_t len, uint32_t *result);
+int crc64_iso(const uint8_t *data, uint32_t len, uint64_t *result);
+int crc64_ecma(const uint8_t *data, uint32_t len, uint64_t *result);
 
 #ifdef __cplusplus
 }

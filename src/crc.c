@@ -12,6 +12,18 @@ static uint32_t reflect(uint32_t data, uint8_t bits)
     return result;
 }
 
+static uint64_t reflect_expand64(uint64_t data, uint8_t bits)
+{
+    if (bits <= 1 || bits > 64) return data;
+
+    uint64_t result = 0;
+    for (uint8_t i = 0; i < bits; i++)
+    {
+        result |= ((data >> i) & 0x1) << (bits - 1 - i);
+    }
+    return result;
+}
+
 int crc(const uint8_t *data, uint32_t len, uint32_t *result,
         uint8_t order, uint32_t poly, uint32_t init, uint32_t xorout,
         bool refin, bool refout)
@@ -66,6 +78,68 @@ int crc(const uint8_t *data, uint32_t len, uint32_t *result,
     if (refout)
     {
         res = reflect(res, order);
+    }
+    res ^= xorout;
+    res &= mask;
+    *result = res;
+
+    return 0;
+}
+
+int crc_expand64(const uint8_t *data, uint32_t len, uint64_t *result,
+                uint8_t order, uint64_t poly, uint64_t init, uint64_t xorout,
+                bool refin, bool refout)
+{
+    if (order <= 0 || order > 64 || data == NULL || len <= 0 || result == NULL)
+    {
+        return -1;
+    }
+
+    uint64_t mask = (order == 64) ? 0xFFFFFFFFFFFFFFFFULL : (1ULL << order) - 1;
+    poly &= mask;
+    init &= mask;
+    xorout &= mask;
+
+    uint64_t res = 0;
+    uint8_t bit_counter_for_init = 0;
+    for (uint32_t i = 0; i < len; i++)
+    {
+        uint8_t byte = data[i];
+        if (refin)
+        {
+            byte = reflect_expand64(byte, 8);
+        }
+        for (uint8_t j = 0; j < 8; j++)
+        {
+            uint8_t top_bit = (res >> (order - 1)) & 1;
+            res = (res << 1) & mask;
+            res |= byte >> (7 - j) & 0x01;
+            if (bit_counter_for_init < order)
+            {
+                bit_counter_for_init ++;
+                if (bit_counter_for_init == order)
+                {
+                    res ^= init;
+                }
+            }
+            if (top_bit)
+            {
+                res ^= poly;
+            }
+        }
+    }
+    for (uint8_t i = 0; i < order; i++)
+    {
+        uint8_t top_bit = (res >> (order - 1)) & 1;
+        res = (res << 1) & mask;
+        if (top_bit)
+        {
+            res ^= poly;
+        }
+    }
+    if (refout)
+    {
+        res = reflect_expand64(res, order);
     }
     res ^= xorout;
     res &= mask;
