@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2021, nayooooo
+ * Copyright (c) 2025-2026, nayooooo
  *
  * SPDX-License-Identifier: MIT
  *
