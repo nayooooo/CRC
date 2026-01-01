@@ -73,8 +73,3 @@ int crc(const uint8_t *data, uint32_t len, uint32_t *result,
 
     return 0;
 }
-
-int crc32(const uint8_t *data, uint32_t len, uint32_t *result)
-{
-    return crc(data, len, result, 32, 0x04C11DB7U, 0xFFFFFFFFU, 0xFFFFFFFFU, (bool)true, (bool)true);
-}
